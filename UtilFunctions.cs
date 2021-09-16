@@ -17,6 +17,12 @@ namespace Pictures
             return new Vector2();
                         
         }*/
+
+        /// <summary>
+        /// Converts a 2D RGBA-encoded uint Array into an array of bytes that can be read by the Pixel plotting alghorithm
+        /// </summary>
+        /// <param name="Matrix">matrix to be converted</param>
+        /// <returns>array of bytes that can be read by the Pixel plotting alghorithm</returns>
         static byte[] UintMatrixToByteArr(uint[,] Matrix)
         {
             byte[] RetVal = new byte[Matrix.Length*4];
@@ -34,6 +40,38 @@ namespace Pictures
                 }
             }
             return RetVal;
+        }
+
+        /// <summary>
+        /// Converts a byte array that can be read by the PixelPlot Algorithm into an uint-encoded RGBA matrix
+        /// </summary>
+        /// <param name="array">Initial byte array</param>
+        /// <param name="height">Number of rows in the final matrix</param>
+        /// <param name="width">number of columns in the final matrix</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException">provided byte array is not large enough to fill the matrix of desired size</exception>
+        static uint[,] ByteArrToRGBAArr(byte[] array, int height, int width)
+        {
+            if ((array.Length/4)==(width*height))
+            {
+                uint[,] RetVal = new uint[height, width];
+                int cols, rows, index = 0;
+                for (cols = 0; cols < height; cols++)
+                {
+                    for (rows = 0; rows < width; rows++)
+                    {
+                        RetVal[cols, rows] =
+                            EncodeRGBA(array[index], array[index + 1], array[index + 2], array[index + 3]);
+                        index += 4;
+                    }
+                }
+                return RetVal;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("height, width",
+                    "byte array is not large enough to fill the matrix of desired size");
+            }
         }
         public static UInt32 EncodeRGBA(byte R, byte G, byte B, byte A)
         {
