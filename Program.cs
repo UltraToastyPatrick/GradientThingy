@@ -15,6 +15,8 @@ namespace Pictures
         image will be 256px X 256 px
          */
         static byte[] _ImageBuffer = new byte[Width * Height * BytesPerPixel];   // = 102400 bytes
+        // 2d RGBA pixel array to make working with stuff less of a pain in the ass
+        static uint[,] _PxArr = new uint[Height,Width];
 
         static void Main(string[] args)
         {
