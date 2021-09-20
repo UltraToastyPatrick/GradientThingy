@@ -7,19 +7,19 @@ namespace Pictures
     {
         const string PicFolderPath = @"C:\Users\Admin\Desktop\Generated pictures\";
         const int BytesPerPixel = 4;
-        const int Width = 256;
-        const int Height = 256;
+        const int Height = 3840;
+        const int Width = 2160;
         const byte DefNoTransparency = 0xFF;
         /*
          creates an array of bytes. each pixel has 4 bytes containing Red, Green, Blue and Alpha (Transparency) values
         image will be 256px X 256 px
          */
-        static byte[] _ImageBuffer = new byte[Width * Height * BytesPerPixel];   // = 102400 bytes
+        static byte[] _ByteBuffer = new byte[Width * Height * BytesPerPixel];   // = 102400 bytes
         // 2d RGBA pixel array to make working with stuff less of a pain in the ass
-        static uint[,] _PxArr = new uint[Height,Width];
+        static uint[,] _ImageBuffer = new uint[Height,Width];
 
         static void Main(string[] args)
-        {
+        {         
             // Cant be bothered to make a console interface bc fuck you
             CreateGradient(GradientType.Fancy);
         }
@@ -38,7 +38,7 @@ namespace Pictures
                     switch (type)
                     {
                         case GradientType.Regular:
-                            FileName = "Gradient";
+                            FileName = "ChungoidGradient";
                             RGBAVal = UtilFunctions.EncodeRGBA(XVal, XVal, XVal, DefNoTransparency);
                             PlotPixel(x, y, RGBAVal);
                             break;
@@ -57,9 +57,10 @@ namespace Pictures
                     }
                 }
             }
+            _ByteBuffer = UtilFunctions.UintMatrixToByteArray(_ImageBuffer);
             unsafe
             {
-                fixed (byte* ptr = _ImageBuffer)
+                fixed (byte* ptr = _ByteBuffer)
                 {
                     using (Bitmap image = new Bitmap(Width, Height, Width * BytesPerPixel,
                         System.Drawing.Imaging.PixelFormat.Format32bppArgb, new IntPtr(ptr)))
@@ -71,14 +72,8 @@ namespace Pictures
         }
         static void PlotPixel(int X, int Y, /*byte Rval, byte GVal, byte Bval,*/ UInt32 RGBA)
         {
-            // Bitshift Fuckery to extract separate values from a single Unsigned int in a format simmilar to hex colors, with an additional byte for transparency
-            (byte R, byte G, byte B, byte A) DecodedData = UtilFunctions.DecodeRGBA(RGBA);
-            byte[] RGBAVals = new byte[4] { DecodedData.R, DecodedData.G, DecodedData.B, DecodedData.A };
-            int offset = ((Width * BytesPerPixel) * Y) + (X * BytesPerPixel);
-            for (int i = 0; i < BytesPerPixel; i++)
-            {
-                _ImageBuffer[offset + i] = RGBAVals[i];
-            }
+            _ImageBuffer[X, Y] = RGBA;
+            Console.WriteLine($"x: {X}, y:{Y}");
         }
         enum GradientType
         {

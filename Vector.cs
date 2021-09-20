@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 
 namespace Pictures
 {
-    struct Vector2
+    struct Point
     {
-        public int x;
-        public int y;
-        public Vector2(int x, int y)
+        public uint x;
+        public uint y;
+        public uint Value;
+        public Point(uint x, uint y, uint RGBA)
         {
             this.x = x;
             this.y = y;
+            Value = RGBA;
         }
     }
 }
